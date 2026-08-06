@@ -132,21 +132,22 @@ Route::middleware('auth:sanctum')->group(function () {
             'file' => 'required|image|max:10240',
         ]);
 
-        $path = $request->file('file')->store('work-orders/' . $workOrder->id, 'public');
+        $disk = config('filesystems.default');
+        $path = $request->file('file')->store('work-orders/' . $workOrder->id, $disk);
 
         $media = \App\Models\MediaAttachment::create([
             'tenant_id' => $workOrder->tenant_id,
             'attachable_type' => WorkOrder::class,
             'attachable_id' => $workOrder->id,
             'type' => 'foto',
-            'disk' => 'public',
+            'disk' => $disk,
             'path' => $path,
             'mime_type' => $request->file('file')->getClientMimeType(),
             'size_bytes' => $request->file('file')->getSize(),
             'uploaded_by' => $request->user()->id,
         ]);
 
-                $event = $workOrder->events()->create([
+        $event = $workOrder->events()->create([
             'user_id' => $request->user()->id,
             'type' => 'foto',
             'content' => 'Fotografía capturada durante el trabajo',
@@ -156,7 +157,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         return response()->json([
             'event' => $event,
-            'media_url' => \Storage::disk('public')->url($path),
+            'media_url' => \Storage::disk($disk)->url($path),
         ], 201);
     });
 
