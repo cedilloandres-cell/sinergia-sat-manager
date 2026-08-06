@@ -22,6 +22,7 @@ return [
     'allowed_origins' => [
         'http://localhost:5173',
         'https://superlative-nasturtium-8d1d5c.netlify.app',
+        'https://app.streamnetweb.com',
     ],
 
     'allowed_origins_patterns' => [],
